@@ -5,6 +5,8 @@ LMSelect <- function(all.data,responseVar,fitFamily,factors=
                      allInteractions=FALSE,
                      saveVars=character(0)){
   
+  ## TODO: return the results of this function as a specific class
+  
   contEffectNames<-names(contEffects)
   
   if ((length(interactions)>0) & (allInteractions)){
