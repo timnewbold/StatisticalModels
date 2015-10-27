@@ -312,10 +312,12 @@ LMSelect <- function(all.data,responseVar,fitFamily,factors=
     } else {
       mBest<-glm(call.best,family=fitFamily,data=model.data)
     }
-    return(list(model=mBest,data=model.data,stats=stats,final.call=call.best))
+    return(LM(model=mBest,data=model.data,stats=stats,final.call=call.best,
+              family=fitFamily))
   } else {
     .Log("Warning: all terms dropped from the model")
-    return(list(model=NULL,data=model.data,stats=stats,final.call=call.best))
+    return(LM(model=NULL,data=model.data,stats=stats,final.call=call.best,
+              family=fitFamily))
   }
   
   
