@@ -53,7 +53,8 @@ print.LM <- function(x, ...) {
 summary.LM <- function(object, ...) {
   if(!is.LM(object)) stop('Not an LM')
   
-  return(list(family=object$family,
+  return(list(R.squared=summary(object$model)$r.squared,
+              family=object$family,
               call=object$final.call,
               stats=object$stats))
   
