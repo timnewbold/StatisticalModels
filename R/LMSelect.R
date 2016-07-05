@@ -316,7 +316,7 @@ LMSelect <- function(all.data,responseVar,fitFamily,factors=
               family=fitFamily))
   } else {
     .Log("Warning: all terms dropped from the model")
-    return(LM(model=NULL,data=model.data,stats=stats,final.call=call.best,
+    return(LM(model=lm(0~0),data=model.data,stats=stats,final.call="",
               family=fitFamily))
   }
   
