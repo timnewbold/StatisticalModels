@@ -275,7 +275,7 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
       
       if (is.null(line.cols)){
         cols<-list()
-        cols[1][[1]]<-"#000000"
+        cols[1][[1]]<-rep("#000000",length(levels(model@frame[,byFactor])))
       } else {
       }
       
