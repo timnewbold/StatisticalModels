@@ -172,21 +172,6 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
         newdat[,o] <- median(data[,o][(data[,byFactor]==l)])
       }
       
-      if (byFactor=="LandUse"){
-        if ("UI" %in% names(newdat)){
-          try(newdat$UI<-intersect(grep(l,levels(model@frame$UI),value=TRUE),
-                                   grep("Minimal",levels(model@frame$UI),value=TRUE)))
-          newdat$UI<-factor(newdat$UI,levels=levels(model@frame$UI))
-        }
-      }
-      if (byFactor=="Taxon"){
-        if ("LUTax" %in% names(newdat)){
-          try(newdat$LUTax<-intersect(grep(l,levels(model@frame$LUTax),value=TRUE),
-                                      grep("Primary",levels(model@frame$LUTax),value=TRUE)))
-          newdat$LUTax<-factor(newdat$LUTax,levels=levels(model@frame$LUTax))
-        }
-      }
-      
       mm<-model.matrix(terms(model),newdat)
       pvar1 <- diag(mm %*% base::tcrossprod(as.matrix(vcov(model)),mm))
       y[,l]<-mm %*% fixef(model)
@@ -288,37 +273,14 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
         
       }
       
-      
-      landUses<-data.frame(lu=c("Primary Vegetation",
-                                "Primary vegetation",
-                                "Natural",
-                                "Secondary Vegetation",
-                                "Secondary vegetation",
-                                "Mature secondary vegetation",
-                                "Intermediate secondary vegetation",
-                                "Young secondary vegetation",
-                                "Plantation forest",
-                                "Cropland",
-                                "Pasture",
-                                "Agriculture",
-                                "Urban",
-                                "Invertebrates",
-                                "Vertebrates",
-                                "Plants"),
-                           col=c("#66A61E","#66A61E","#66A61E","#1B9E77","#1B9E77","#147659","#1B9E77","#8ecfbc",
-                                 "#7570B3","#E6AB02","#D95F02","#D95F02","#E7298A","#d95f02",
-                                 "#7570b3","#1b9e77"))
-      
       if (is.null(line.cols)){
         cols<-list()
-        cols[1][[1]]<-paste(landUses$col[match(levels(model@frame[,byFactor]),landUses$lu)])
-        cols[1][[1]][cols[1][[1]]=="NA"]<-"#000000"
+        cols[1][[1]]<-"#000000"
       } else {
       }
       
       
       
-      o<-na.omit(match(landUses$lu,levels(model@frame[,byFactor])))
       o<-c(o,setdiff(1:length(levels(model@frame[,byFactor])),o))
       
       if (plotUncertainty){
