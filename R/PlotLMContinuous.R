@@ -75,7 +75,7 @@ PlotLMContinuous <- function(model,terms,se.fit=FALSE,seMultiplier=1.96,
     if (se.fit){
       plot(9e99,9e99,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,log=log)
     } else {
-      plot(9e99,9e99,xlim=xlim,ylim=ylim,log=log)
+      plot(9e99,9e99,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,log=log)
     }
     
     for (nd in newdat){
@@ -89,8 +89,11 @@ PlotLMContinuous <- function(model,terms,se.fit=FALSE,seMultiplier=1.96,
       }
       
       y <- yTransform(y)
-      y.minus <- yTransform(y.minus)
-      y.plus <- yTransform(y.plus)
+      if (se.fit) {
+        y.minus <- yTransform(y.minus)
+        y.plus <- yTransform(y.plus)
+      }
+      
       
       
       if(se.fit){

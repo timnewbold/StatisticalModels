@@ -33,8 +33,9 @@ LMSelect <- function(all.data,responseVar,fitFamily,factors=
   if (allInteractions){
     mainTerms<-allTerms
     
-    for (i in 1:length(mainTerms)-1){
+    for (i in 1:(length(mainTerms)-1)){
       for (j in (i+1):length(mainTerms)){
+        term<-paste(mainTerms[i],mainTerms[j],sep=":")
         allTerms<-c(allTerms,term)
       }
     }
@@ -127,7 +128,7 @@ LMSelect <- function(all.data,responseVar,fitFamily,factors=
     .Log(paste("Dropping ",dropI,"\n",sep=""))
     
     
-    t1<-gsub("[(]","[(]",t)
+    t1<-gsub("[(]","[(]",dropI)
     t2<-gsub("[)]","[)]",t1)
     if (t != tail(allTerms,1)){
       t3<-paste(t2,"[+]",sep="")
