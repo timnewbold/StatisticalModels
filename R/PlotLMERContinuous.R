@@ -1,7 +1,9 @@
 
 PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
-                          otherFactors=character(0),xlab,ylab,byFactor=NULL,zlab=NULL,
-                          outDir=NULL,logLink="n",plotRug=FALSE,seMultiplier=1.96,
+                          otherFactors=character(0),xlab,ylab,
+                          byFactor=NULL,byContEffect=NULL,
+                          zlab=NULL,outDir=NULL,logLink="n",plotRug=FALSE,
+                          seMultiplier=1.96,
                           params=list(),add=FALSE,xlim=NULL,ylim=NULL,zlim=NULL,
                           line.cols=NULL,line.types=NULL,plotUncertainty=TRUE,
                           nPanels=1,main=NULL,yDiv=1,transformX=FALSE){  
@@ -10,7 +12,11 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
     stop("If plotting by a factor is specified, only one effect can be plotted")
   }
   
-  if ((length(effects)==1) && (is.null(byFactor))){
+  if ((!is.null(byFactor)) && (!is.null(byContEffect))){
+    stop("You cannot specify both a factor and a continuous effect to divide the results")
+  }
+  
+  if ((length(effects)==1) && (is.null(byFactor)) && (is.null(byContEffect))){
     eval(substitute(newdat<-data.frame(seq(from=min(data$x,na.rm=TRUE),to=max(data$x,na.rm=TRUE),length.out=100)),list(x=effects)))
     names(newdat)<-effects
     for (o in otherContEffects){
@@ -323,6 +329,178 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
       }
       
     }
+    
+  } else if ((length(effects)==1) && (!is.null(byContEffect))){
+    
+    if((!is.null(line.cols)) & (length(line.cols)!=3)){
+      stop("Specified colours must be of the same number as the number of factor levels")
+    }
+    if((!is.null(line.types)) & (length(line.types)!=3)){
+      stop("Specified line types must be of the same number as the number of factor levels")
+    }
+    
+    
+    eval(substitute(newdat<-data.frame(seq(from=min(data$x,na.rm=TRUE),to=max(data$x,na.rm=TRUE),length.out=100)),
+                    list(x=effects)))
+    names(newdat)<-effects
+    
+    # Add a column to newdat for each of otherFactors
+    for(i in 1:length(otherFactors)) {
+      col <- names(otherFactors)[i]
+      newdat[,col] <- factor(otherFactors[i], levels=levels(data[,col]))
+    }
+    
+    newdat[,names(model@frame)[1]] <- 0
+    
+    y<-data.frame(x=newdat[,1])
+    yplus<-data.frame(x=newdat[,1])
+    yminus<-data.frame(x=newdat[,1])
+    
+    byContEffectVals <- c(quantile(data[,byContEffect],probs = 0.025,na.rm=TRUE),
+                          median(data[,byContEffect],na.rm=TRUE),
+                          quantile(data[,byContEffect],probs = 0.975,na.rm=TRUE))
+    
+    data$ByContEffectTerciles <- cut(data[,byContEffect],
+                                            breaks = quantile(data[,byContEffect],
+                                                              probs = c(0,0.2,0.45,0.55,0.8,1),na.rm = TRUE),
+                                            labels = c(1,"NA1",2,"NA2",3))
+    
+    for (i in 1:length(byContEffectVals)){
+      newdat[,byContEffect] <- byContEffectVals[i]
+      
+      for (o in otherContEffects){
+        newdat[,o] <- median(data[,o][(data$ByContEffectTerciles==i)],na.rm=TRUE)
+      }
+      
+      mm<-model.matrix(terms(model),newdat)
+      pvar1 <- diag(mm %*% base::tcrossprod(as.matrix(vcov(model)),mm))
+      y[,paste(i)]<-mm %*% fixef(model)
+      
+      if (logLink=="e"){
+        yplus[,paste(i)]<-exp(y[,paste(i)]+seMultiplier*sqrt(pvar1))
+        yminus[,paste(i)]<-exp(y[,paste(i)]-seMultiplier*sqrt(pvar1))
+        y[,paste(i)]<-exp(y[,paste(i)])
+      } else if (logLink=="10"){
+        yplus[,paste(i)]<-10^(y[,paste(i)]+seMultiplier*sqrt(pvar1))
+        yminus[,paste(i)]<-10^(y[,paste(i)]-seMultiplier*sqrt(pvar1))
+        y[,paste(i)]<-10^(y[,paste(i)])
+      } else if (logLink=="b"){
+        yplus[,paste(i)]<-1/(1+exp(-(y[,paste(i)]+seMultiplier*sqrt(pvar1))))
+        yminus[,paste(i)]<-1/(1+exp(-(y[,paste(i)]-seMultiplier*sqrt(pvar1))))
+        y[,paste(i)]<-1/(1+exp(-(y[,paste(i)])))
+      } else if (logLink=="n") {
+        yplus[,paste(i)]<-(y[,paste(i)]+seMultiplier*sqrt(pvar1))
+        yminus[,paste(i)]<-(y[,paste(i)]-seMultiplier*sqrt(pvar1))
+      } else {
+        stop("Error: the specified log link is not supported")
+      }
+      
+      try(y[y$x>quantile(data[data$ByContEffectTerciles==i,][,effects[1]],0.975),][,paste(i)]<-NA,silent=TRUE)
+      try(yplus[yplus$x>quantile(data[data$ByContEffectTerciles==i,][,effects[1]],0.975),][,paste(i)]<-NA,silent=TRUE)
+      try(yminus[yminus$x>quantile(data[data$ByContEffectTerciles==i,][,effects[1]],0.975),][,paste(i)]<-NA,silent=TRUE)
+      try(y[y$x<quantile(data[data$ByContEffectTerciles==i,][,effects[1]],0.025),][,paste(i)]<-NA,silent=TRUE)
+      try(yplus[yplus$x<quantile(data[data$ByContEffectTerciles==i,][,effects[1]],0.025),][,paste(i)]<-NA,silent=TRUE)
+      try(yminus[yminus$x<quantile(data[data$ByContEffectTerciles==i,][,effects[1]],0.025),][,paste(i)]<-NA,silent=TRUE)
+      
+    }
+    
+    if (!is.null(outDir)){
+      png(paste(outDir,"/",effects," effect_",names(model@frame)[1],".png",
+                sep=""),width=22.86/2.54,height=12.57/2.54,units="in",res=1200)
+    }
+    
+    par(mgp=c(2.5,1,0))
+    par(mar=c(4,4,1,1))
+    par(las=1)
+    par(cex.lab=1.5)
+    
+    for (p in names(params)){
+      eval(parse(text=gsub("x",p,"par(x=params$x)")))
+    }
+     
+    if (!add){
+      options(scipen=0)
+      
+      if(!transformX){
+        xlims<-c(min(y$x),max(y$x))
+      } else {
+        xlims<-c(exp(min(y$x)),exp(max(y$x)))
+      }
+      if(!is.null(xlim)){
+        xlims<-xlim
+      }
+      
+      if (is.null(ylim)){
+        if(!transformX){
+          plot(-99999,-99999,xlim=xlims,
+               ylim=c(min((yminus/yDiv)[,-1],na.rm=TRUE),
+                      max((yplus/yDiv)[,-1],na.rm=TRUE)),
+               xlab=xlab,ylab=ylab,main=main)
+        } else {
+          plot(9e99,9e99,xlim=xlims,
+               ylim=c(min((yminus/yDiv)[,-1],na.rm=TRUE),
+                      max((yplus/yDiv)[,-1],na.rm=TRUE)),
+               xlab=xlab,ylab=ylab,log="x",main=main)
+        }
+        
+      } else {
+        if(!transformX){
+          plot(-99999,-99999,xlim=xlims,
+               ylim=ylim,
+               xlab=xlab,ylab=ylab,main=main)
+        } else {
+          plot(9e99,9e99,xlim=xlims,
+               ylim=ylim,
+               xlab=xlab,ylab=ylab,log="x",main=main)
+        }
+        
+      }
+      
+    }
+    
+    if (is.null(line.cols)){
+      cols<-rep("#000000",length(byContEffectVals))
+    } else {
+      cols <- line.cols
+    }
+    
+    if (plotUncertainty){
+      for (i in 1:length(byContEffectVals)){
+        y.temp<-y[,c('x',paste(i))]
+        y.temp<-na.omit(y.temp)
+        yplus.temp<-yplus[,c('x',paste(i))]
+        yplus.temp<-na.omit(yplus.temp)
+        yminus.temp<-yminus[,c('x',paste(i))]
+        yminus.temp<-na.omit(yminus.temp)
+        if(transformX){
+          X.Vec <- exp(c(y.temp$x, max(y.temp$x), rev(y.temp$x), min(y.temp$x)))
+        } else {
+          X.Vec <- c(y.temp$x, max(y.temp$x), rev(y.temp$x), min(y.temp$x))
+        }
+        
+        Y.Vec <- c((yminus.temp/yDiv)[,paste(i)], tail((yplus.temp/yDiv)[,paste(i)], 1), rev((yplus.temp/yDiv)[,paste(i)]), (yminus.temp/yDiv)[,paste(i)][1])
+        polygon(X.Vec, Y.Vec, col = paste(cols[i],"33",sep=""), border = NA)
+        i<-i+1
+      }
+      
+    }
+    
+    i<-1
+    for (i in 1:length(byContEffectVals)){
+      if(transformX){
+        points(exp(y$x),(y/yDiv)[,paste(i)],type="l",col=cols[i],lty=ifelse(is.null(line.types),1,line.types[i]))
+#         if (plotRug){
+#           rug(exp(data[data[,byFactor]==l,][,effects[1]]),col=cols[p][[1]][i])
+#         }
+      } else {
+        points(y$x,(y/yDiv)[,paste(i)],type="l",col=cols[i],lty=ifelse(is.null(line.types),1,line.types[i]))
+#         if (plotRug){
+#           rug(data[data[,byFactor]==l,][,effects[1]],col=cols[p][[1]][i])
+#         }
+      }
+      
+    }
+      
     
   } else if (length(effects==2)){
     
