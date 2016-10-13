@@ -360,10 +360,30 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
                           median(data[,byContEffect],na.rm=TRUE),
                           quantile(data[,byContEffect],probs = 0.975,na.rm=TRUE))
     
+    binWidth <- 0.1
+    prbs <- c(binWidth,0.5-(0.5*binWidth),0.5+(0.5*binWidth),1-binWidth)
+    brks <- c(-Inf,quantile(data[,byContEffect],
+                     probs = prbs,na.rm = TRUE),Inf) + 
+      seq_along(brks) * 10 * .Machine$double.eps
     data$ByContEffectTerciles <- cut(data[,byContEffect],
-                                            breaks = quantile(data[,byContEffect],
-                                                              probs = c(0,0.2,0.45,0.55,0.8,1),na.rm = TRUE),
+                                            breaks = brks,
                                             labels = c(1,"NA1",2,"NA2",3))
+    emptyBin <- any(unlist(lapply(as.list(c(1,2,3)),function(x){
+      return(length(which(data$ByContEffectTerciles==x))==0)
+      })))
+    while(emptyBin){
+      binWidth <- binWidth + 0.01
+      prbs <- c(binWidth,0.5-(0.5*binWidth),0.5+(0.5*binWidth),1-binWidth)
+      brks <- c(-Inf,quantile(data[,byContEffect],
+                              probs = prbs,na.rm = TRUE),Inf) + 
+        seq_along(brks) * 10 * .Machine$double.eps
+      data$ByContEffectTerciles <- cut(data[,byContEffect],
+                                       breaks = brks,
+                                       labels = c(1,"NA1",2,"NA2",3))
+      emptyBin <- any(unlist(lapply(as.list(c(1,2,3)),function(x){
+        return(length(which(data$ByContEffectTerciles==x))==0)
+      })))
+    }
     
     for (i in 1:length(byContEffectVals)){
       newdat[,byContEffect] <- byContEffectVals[i]
