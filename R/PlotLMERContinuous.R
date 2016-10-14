@@ -363,8 +363,8 @@ PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
     binWidth <- 0.1
     prbs <- c(binWidth,0.5-(0.5*binWidth),0.5+(0.5*binWidth),1-binWidth)
     brks <- c(-Inf,quantile(data[,byContEffect],
-                     probs = prbs,na.rm = TRUE),Inf) + 
-      seq_along(brks) * 10 * .Machine$double.eps
+                     probs = prbs,na.rm = TRUE),Inf)
+    brks <- brks + seq_along(brks) * 10 * .Machine$double.eps
     data$ByContEffectTerciles <- cut(data[,byContEffect],
                                             breaks = brks,
                                             labels = c(1,"NA1",2,"NA2",3))
