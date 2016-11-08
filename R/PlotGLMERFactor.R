@@ -168,9 +168,9 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   }
   
   if (!add){
-    if ((plotLabels) & (length(which(plot.cols=="black"))>0)){
-      text(which(plot.cols=="black"),plotLims[1]+0.05*predRange,
-           labels[which(plot.cols=="black")],cex=cex.txt,srt=xtext.srt,xpd=TRUE)
+    if (plotLabels){
+      text(1:length(labels),plotLims[1]+0.05*predRange,
+           labels,cex=cex.txt,srt=xtext.srt,xpd=TRUE)
       
     }
     
