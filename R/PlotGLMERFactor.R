@@ -1,6 +1,7 @@
 
 PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
                      logLink="n",catEffects=NULL,
+                     contEffects=list(),contEffectsLabels=NULL,
                      otherCatEffects=list(),
                      otherContEffects=character(0),
                      xtext.srt=0,ylim=NA,yaxp=NULL,order=NULL,rescale=NULL,
