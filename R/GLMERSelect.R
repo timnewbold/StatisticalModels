@@ -11,7 +11,7 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
   randomTerms <- randomTerms[(randomTerms!="(1")]
   randomTerms <- gsub("[)]","",randomTerms)
   
-  allTerms <- unique(c(randomTerms,fixedFactors,names(FixedTerms),responseVar,saveVars))
+  allTerms <- unique(c(randomTerms,fixedFactors,names(fixedTerms),responseVar,saveVars))
   
   modelData<-subset(modelData,select=c(allTerms))
   modelData<-na.omit(modelData)
