@@ -1,5 +1,5 @@
 
-PlotLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
+PlotGLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
                           otherFactors=character(0),xlab,ylab,
                           byFactor=NULL,byContEffect=NULL,
                           zlab=NULL,outDir=NULL,logLink="n",plotRug=FALSE,
