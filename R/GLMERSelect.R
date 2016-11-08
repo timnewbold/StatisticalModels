@@ -16,11 +16,11 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
   modelData<-subset(modelData,select=c(allTerms))
   modelData<-na.omit(modelData)
   
-  cat<-sapply(model.data,is.factor)
-  model.data[cat]<-lapply(model.data[cat],factor)
+  cat<-sapply(modelData,is.factor)
+  modelData[cat]<-lapply(modelData[cat],factor)
   
   for (fe in fixedFactors){
-    eval(substitute(model.data$x<-factor(model.data$x),list(x=fe)))
+    eval(substitute(modelData$x<-factor(modelData$x),list(x=fe)))
   }
   
   results<-list(fixef=character(),AIC=numeric())
@@ -117,10 +117,10 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
     if (verbose) print(call.old)
      
     if (fitFamily=="gaussian"){
-      mOld<-lmer(call.old,data=model.data,REML=FALSE,
+      mOld<-lmer(call.old,data=modelData,REML=FALSE,
                  lmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     } else {
-      mOld<-glmer(call.old,family=fitFamily,data=model.data,
+      mOld<-glmer(call.old,family=fitFamily,data=modelData,
                   control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     }
     
@@ -142,10 +142,10 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
       call.new<-gsub(t3,"",call.old)
       
       if (fitFamily=="gaussian"){
-        mNew<-lmer(call.new,data=model.data,REML=FALSE,
+        mNew<-lmer(call.new,data=modelData,REML=FALSE,
                    lmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
       } else {
-        mNew<-glmer(call.new,family=fitFamily,data=model.data,
+        mNew<-glmer(call.new,family=fitFamily,data=modelData,
                     control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
       }
       
@@ -213,10 +213,10 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
     if (verbose) print(call.old)
     
     if (fitFamily=="gaussian"){
-      mOld<-lmer(call.old,data=model.data,REML=FALSE,
+      mOld<-lmer(call.old,data=modelData,REML=FALSE,
                  lmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     } else {
-      mOld<-glmer(call.old,family=fitFamily,data=model.data,
+      mOld<-glmer(call.old,family=fitFamily,data=modelData,
                   control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     }
     
@@ -248,10 +248,10 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
       }
       
       if (fitFamily=="gaussian"){
-        mNew<-lmer(call.new,data=model.data,REML=FALSE,
+        mNew<-lmer(call.new,data=modelData,REML=FALSE,
                    lmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
       } else {
-        mNew<-glmer(call.new,family=fitFamily,data=model.data,
+        mNew<-glmer(call.new,family=fitFamily,data=modelData,
                     control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
       }
       
@@ -348,16 +348,16 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
     call.best<-construct_call(responseVar,fixedStruct,randomStruct)
     if (verbose) print(call.best)
     if (fitFamily=="gaussian"){
-      mBest<-lmer(call.best,data=model.data,REML=TRUE,
+      mBest<-lmer(call.best,data=modelData,REML=TRUE,
                   lmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     } else {
-      mBest<-glmer(call.best,family=fitFamily,data=model.data,
+      mBest<-glmer(call.best,family=fitFamily,data=modelData,
                    control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     }
-    return(list(model=mBest,data=model.data,stats=stats,final.call=call.best))
+    return(list(model=mBest,data=modelData,stats=stats,final.call=call.best))
   } else {
     print("Warning: all terms were dropped from the model")
-    return(list(model=NULL,data=model.data,stats=stats,final.call=NULL))
+    return(list(model=NULL,data=modelData,stats=stats,final.call=NULL))
   }
   
 }
