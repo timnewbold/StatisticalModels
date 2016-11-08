@@ -2,7 +2,7 @@ GLMER<-function(modelData,responseVar,fitFamily,fixedStruct,
                       randomStruct,saveVars=character(0),REML=TRUE,
                      optimizer="bobyqa",maxIters=10000){
   
-  call.best<-construct_call(responseVar,fixedStruct,randomStruct)
+  call.best<-.ConstructCall(responseVar,fixedStruct,randomStruct)
   
   allTerms<-unlist(strsplit(call.best,"[+]"))
   allTerms<-unlist(strsplit(allTerms,"[-]"))

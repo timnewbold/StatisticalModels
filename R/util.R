@@ -11,3 +11,7 @@
   }
   
 }
+
+.ConstructCall<-function(responseVar,fixedStruct,randomStruct){
+  return(paste(responseVar,"~",fixedStruct,"+",randomStruct,sep=""))
+}
