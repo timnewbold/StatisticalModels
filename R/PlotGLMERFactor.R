@@ -22,19 +22,9 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   # Get the names of the labels and coefficient names for each factor
   # If align is specified, then use the full set of labels defined above
   for (e in catEffects){
-    if (align & (e %in% names(predefined.factors.2))){
-      eval(substitute(names<-paste(predefined.factors.2$x$x),list(x=e)))
-      labels<-c(labels,names)
-      coef.labels<-c(coef.labels,paste(e,names,sep=""))
-    } else if (!matchLandUses) {
-      eval(substitute(names<-levels(model@frame[,e]),list(x=e)))
-      labels<-c(labels,names)
-      coef.labels<-c(coef.labels,paste(e,names,sep=""))
-    } else {
-      names<-levels(model@frame[,e])
-      labels<-c(labels,names)
-      coef.labels<-c(coef.labels,paste(e,names,sep=""))
-    }
+    names<-levels(model@frame[,e])
+    labels<-c(labels,names)
+    coef.labels<-c(coef.labels,paste(e,names,sep=""))
   }
   
   # Get coefficient and standard error estimates from the model
