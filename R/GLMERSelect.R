@@ -345,7 +345,7 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
       fixedStruct<-paste(fixedStruct,sig.terms[i],sep="")
       if (i != length(sig.terms)) fixedStruct<-paste(fixedStruct,"+",sep="")
     }
-    call.best<-construct_call(responseVar,fixedStruct,randomStruct)
+    call.best<-.ConstructCall(responseVar,fixedStruct,randomStruct)
     if (verbose) print(call.best)
     if (fitFamily=="gaussian"){
       mBest<-lmer(call.best,data=modelData,REML=TRUE,
