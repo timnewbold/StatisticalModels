@@ -350,7 +350,13 @@ PlotGLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
       newdat[,col] <- factor(otherFactors[i], levels=levels(data[,col]))
     }
     
-    newdat[,names(model@frame)[1]] <- 0
+    if (class(model)=="glmmadmb"){
+      newdat[,names(model$frame)[1]] <- 0
+    } else {
+      newdat[,names(model@frame)[1]] <- 0
+    }
+    
+    
     
     y<-data.frame(x=newdat[,1])
     yplus<-data.frame(x=newdat[,1])
