@@ -1,21 +1,12 @@
 
 PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
                      logLink="n",catEffects=NULL,
-                     contEffects=list(),contEffectsLabels=NULL,
-                     otherCatEffects=list(),
-                     otherContEffects=character(0),
                      xtext.srt=0,ylim=NA,yaxp=NULL,order=NULL,rescale=NULL,
                      errbar.cols=NULL,pt.pch=NULL,
                      errbar.lty=1,
                      params=list(),add=FALSE,offset=0,
                      plotLabels=TRUE,cex.txt=NULL,pt.cex=1,
                      pt.bg="white",main=NULL,type="percent"){
-  
-  if (!is.null(contEffectsLabels)){
-    if (length(contEffects)!=length(contEffectsLabels)){
-      stop("Labels for continuous effects must be of the same number as the effects")
-    }
-  }
   
   labels<-character(0)
   coef.labels<-character(0)
@@ -142,27 +133,9 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   }
   
   for (i in 1:length(catEffects)){
-    if ((i!=length(catEffects)) | (length(contEffects)>0)){
+    if (i!=length(catEffects)){
       abline(v=max(grep(catEffects[i],coef.labels))+0.5,lwd=1,
              col="dark grey")
-    }
-    
-  }
-  if (any(contEffects>0)){
-    if (length(contEffects)>0){
-      for (i in 1:length(contEffects)){
-        if (i != length(contEffects)){
-          if (is.null(contEffectsLabels)){
-            abline(v=which(labels==names(contEffects)[i])+1.5,lwd=1,
-                   col="dark grey")
-          } else {
-            abline(v=which(labels==contEffectsLabels[i])+1.5,lwd=1,
-                   col="dark grey")
-          }
-          
-        }
-      }
-      
     }
     
   }
@@ -178,32 +151,6 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
       abline(h=0,col="dark grey")
     } else {
       abline(h=0,col="dark grey")
-    }
-    
-  }
-  
-  if (length(contEffects>0)){
-    if ((logLink=="10") | (logLink=="e")){
-      text((which(labels=="")[1]:(which(labels=="")[1]+
-                                    length(contEffects)*3))+offset,
-           yminus[which(labels=="")[1]:(which(labels=="")[1]+
-                                          length(contEffects)*3)]-(predRange/13),
-           rep(c("L","M","H"),length(contEffects)),
-           col="black",cex=cex.txt,srt=45)
-    } else if (logLink=="inv10") {
-      text((which(labels=="")[1]:(which(labels=="")[1]+
-                                    length(contEffects)*3))+offset,
-           yplus[which(labels=="")[1]:(which(labels=="")[1]+
-                                         length(contEffects)*3)]-(predRange/13),
-           rep(c("L","M","H"),length(contEffects)),
-           col="black",cex=cex.txt,srt=45)
-    } else {
-      text((which(labels=="")[1]:(which(labels=="")[1]+
-                                    length(contEffects)*3))+offset,
-           yminus[which(labels=="")[1]:(which(labels=="")[1]+
-                                          length(contEffects)*3)]-(predRange/13),
-           rep(c("L","M","H"),length(contEffects)),
-           col="black",cex=cex.txt,srt=45)
     }
     
   }
