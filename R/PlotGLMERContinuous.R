@@ -1,12 +1,13 @@
 
-PlotGLMERContinuous<-function(model,data,effects,otherContEffects=character(0),
-                          otherFactors=character(0),xlab,ylab,
-                          byFactor=NULL,byContEffect=NULL,
-                          zlab=NULL,outDir=NULL,logLink="n",plotRug=FALSE,
-                          seMultiplier=1.96,
-                          params=list(),add=FALSE,xlim=NULL,ylim=NULL,zlim=NULL,
-                          line.cols=NULL,line.types=NULL,plotUncertainty=TRUE,
-                          nPanels=1,main=NULL,yDiv=1,transformX=FALSE){  
+PlotGLMERContinuous<-function(model,data,effects,byContEffect=NULL,
+                              otherContEffects=character(0),
+                              otherFactors=character(0),xlab,ylab,
+                              byFactor=NULL,zlab=NULL,outDir=NULL,
+                              logLink="n",plotRug=FALSE,seMultiplier=1.96,
+                              params=list(),add=FALSE,xlim=NULL,ylim=NULL,
+                              zlim=NULL,line.cols=NULL,line.types=NULL,
+                              plotUncertainty=TRUE,nPanels=1,main=NULL,
+                              yDiv=1,transformX=FALSE){  
   
   if ((length(effects)>1) && (!is.null(byFactor))){
     stop("If plotting by a factor is specified, only one effect can be plotted")
