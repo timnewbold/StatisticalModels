@@ -1,5 +1,5 @@
 
-LMSelect <- function(all.data,responseVar,fitFamily,factors=
+LMSelect <- function(modelData,responseVar,fitFamily,factors=
                        character(0),contEffects=list(),
                      interactions=character(0),
                      allInteractions=FALSE,
@@ -13,7 +13,7 @@ LMSelect <- function(all.data,responseVar,fitFamily,factors=
     stop("Error: specifying particular interactions and all two-way interactions will not work!")
   }
 
-  model.data<-subset(all.data,select=c(factors,names(contEffects),
+  model.data<-subset(modelData,select=c(factors,names(contEffects),
                                        responseVar,saveVars))
   
   
