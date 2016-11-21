@@ -1,7 +1,7 @@
 
 R2GLMER<-function(model){
   
-  stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
+  # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
   
   # Calculated following Nakagawa & Schielzeth (2013) MEE
   VarF <- var(as.vector(fixef(model) %*% t(getME(model,"X"))))
