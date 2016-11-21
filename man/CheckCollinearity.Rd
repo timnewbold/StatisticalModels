@@ -17,7 +17,10 @@ Check collinearity among pairs of variables in a data frame
   }
   }
 \details{
-    }
+  }
+\value{
+A data frame containing R squared values describing the pair-wise collinearity between variables
+  }
 \references{
   }
 \author{
