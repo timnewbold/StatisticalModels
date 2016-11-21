@@ -2,7 +2,7 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
                          character(0),fixedTerms=list(),randomStruct,
                        fixedInteractions=character(0),fitInteractions=FALSE,
                       verbose=FALSE,saveVars=character(0),
-                      optimizer="Nelder_Mead",maxIters=10000){
+                      optimizer="bobyqa",maxIters=10000){
   
   contEffectNames<-names(fixedTerms)
   

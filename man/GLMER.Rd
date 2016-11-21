@@ -38,7 +38,7 @@ The GLMER optimizer to use. Options are 'bobyqa' (the default) and 'Nelder_Mead'
 }
   \item{maxIters}{
 The maximum number of iterations to allow by the optimizer (default is 10,000) 
-  }
+}
 }
 \details{
   }
