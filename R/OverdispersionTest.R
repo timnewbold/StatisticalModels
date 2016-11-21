@@ -1,5 +1,5 @@
 GLMEROverdispersion<-function(model){
-  stopifnot(class(model)=="lmerMod")
+  stopifnot((class(model)=="lmerMod") | (class(model)=="glmerMod"))
   
   vpars <- function(m) {
     nrow(m)*(nrow(m)+1)/2
