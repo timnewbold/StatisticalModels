@@ -37,14 +37,14 @@ Tim Newbold <t.newbold@ucl.ac.uk>
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-# Load example PREDICTS site-level data for the UK
-data(sites)
+# Load example data (site-level effects of land use on biodiversity from the PREDICTS database)
+data(PREDICTSSiteData)
 
-# Build a model
-m1<-FixedModel(all.data=sites,responseVar="Species_richness",
-fitFamily="poisson",
-fixedStruct="LandUse",
-randomStruct="(1|SS)+(1|SSB)+(1|SSBS)")
+# Run a model of species richness as a function of land use, human population density
+# and distance to nearest road (with an interaction between human population density
+# and road distance)
+m1 <- GLMER(modelData = PREDICTSSites,responseVar = "Species_richness",fitFamily = "poisson",
+fixedStruct = "LandUse",randomStruct = "(1|SS)+(1|SSB)+(1|SSBS)",REML = TRUE)
 
 # Perform test for over-dispersion
 R2GLMER(m1$model)
