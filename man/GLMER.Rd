@@ -65,8 +65,10 @@ Tim Newbold <t.newbold@ucl.ac.uk>
 # Load example data (site-level effects of land use on biodiversity from the PREDICTS database)
 data(PREDICTSSiteData)
 
-# Run a model of species richness as a function of land use, human population density
+# Run a model of log-transformed total abundance as a function of land use, human population density
 # and distance to nearest road (with an interaction between human population density
 # and road distance)
-m1 <- GLMER(modelData = PREDICTSSites,responseVar = "Species_richness",fitFamily = "poisson",fixedStruct = "LandUse+poly(logHPD.rs,2)+poly(logDistRd.rs,2)+poly(logHPD.rs,2):poly(logDistRd.rs,2)",randomStruct = "(1|SS)+(1|SSB)+(1|SSBS)",REML = TRUE)
+m1 <- GLMER(modelData = PREDICTSSites,responseVar = "LogAbund",fitFamily = "gaussian",
+fixedStruct = "LandUse+poly(logHPD.rs,2)+poly(logDistRd.rs,2)+poly(logHPD.rs,2):poly(logDistRd.rs,2)",
+randomStruct = "(1|SS)+(1|SSB)",REML = TRUE)
 }
