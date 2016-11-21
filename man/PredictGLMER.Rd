@@ -1,24 +1,33 @@
-\name{GLMEROverdispersion}
-\alias{GLMEROverdispersion}
+\name{PredictGLMER}
+\alias{PredictGLMER}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Test for over-dispersion}
+\title{Predicted values for GLMERs}
 \description{
-Tests for over-dispersion in the residuals of a mixed-effects model
+Generates predicted values from a generalized linear mixed-effects model and a data frame with values of the explanatory variables
 }
 \usage{
-GLMEROverdispersion(model)
+PredictGLMER(model,data,se.fit=FALSE,seMultiplier = 1.96)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{
   A mixed-effects model, of class 'lmerMod' or 'glmerMod'
   }
+  \item{data}{
+  A data frame containing values of the explanatory variables for which to make predictions
+  }
+  \item{se.fit}{
+  Whether to estimate uncertainty around the predictions (default is False)
+  }
+  \item{seMultiplier}{
+  The multiplier to apply to the uncertainty estimates (default is 1.96, which generates 95% confidence limits)
+  }
 }
 \details{
-Compares residual deviance and residual degrees of freedom of a mixed-effects model to a chi-sqaure distribution. Adapted from code taken from the GLMM Wiki (see references) 
+Code for calculating predicted values and confidence intervals was taken from the GLMM wiki (see references). 
 }
 \value{
-Reports the residual deviance, residual degrees of freedom and the ratio of these, and also a the P-value of a chi-square test comparing the residual deviance and degrees of freedom to a chi-square distribution
+
 }
 \references{
 http://glmm.wikidot.com/faq
@@ -43,17 +52,10 @@ data(PREDICTSSiteData)
 # and distance to nearest road (with an interaction between human population density
 # and road distance)
 m1 <- GLMER(modelData = PREDICTSSites,responseVar = "Species_richness",fitFamily = "poisson",
-fixedStruct = "LandUse",randomStruct = "(1|SS)+(1|SSB)",REML = TRUE)
-
-# Test for overdispersion
-GLMEROverdispersion(m1$model)
-
-# Try adding an observation-level random intercept (which can control for overdispersion)
-m2 <- GLMER(modelData = PREDICTSSites,responseVar = "Species_richness",fitFamily = "poisson",
 fixedStruct = "LandUse",randomStruct = "(1|SS)+(1|SSB)+(1|SSBS)",REML = TRUE)
 
-# Test for overdispersion again
-GLMEROverdispersion(m2$model)
+# Generate predicted values for each land use
+preds <- PredictGLMER()
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

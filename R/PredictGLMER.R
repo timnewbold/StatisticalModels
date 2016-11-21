@@ -1,5 +1,7 @@
 PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96){
   
+  stopifnot((class(model)=="lmerMod") | (class(model)=="glmerMod"))
+  
   mm<-model.matrix(terms(model),data)
   y <- mm %*% fixef(model)
   
