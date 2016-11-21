@@ -1,12 +1,12 @@
-\name{OverdispersionTest}
-\alias{OverdispersionTest}
+\name{GLMEROverdispersion}
+\alias{GLMEROverdispersion}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Test for over-dispersion}
 \description{
 Tests for over-dispersion in the residuals of a mixed-effects model
 }
 \usage{
-OverdispersionTest(model)
+GLMEROverdispersion(model)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
