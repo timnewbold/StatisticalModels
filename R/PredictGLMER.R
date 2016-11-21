@@ -14,7 +14,7 @@ PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96){
     return(data.frame(y=y,yplus=yplus,yminus=yminus))
     
   } else {
-    return(y)
+    return(data.frame(y=y))
   }
   
 }

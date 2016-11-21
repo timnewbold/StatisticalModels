@@ -27,7 +27,7 @@ PredictGLMER(model,data,se.fit=FALSE,seMultiplier = 1.96)
 Code for calculating predicted values and confidence intervals was taken from the GLMM wiki (see references). 
 }
 \value{
-
+A data frame either containing a single column 'y', when uncertainty is not calculated, or 3 columns ('y', 'yplus' and 'yminus'), when uncertainty is calculated
 }
 \references{
 http://glmm.wikidot.com/faq
@@ -54,8 +54,14 @@ data(PREDICTSSiteData)
 m1 <- GLMER(modelData = PREDICTSSites,responseVar = "Species_richness",fitFamily = "poisson",
 fixedStruct = "LandUse",randomStruct = "(1|SS)+(1|SSB)+(1|SSBS)",REML = TRUE)
 
-# Generate predicted values for each land use
-preds <- PredictGLMER()
+predDat <- data.frame(LandUse=factor(c("Primary Vegetation","Secondary Vegetation",
+"Plantation forest","Cropland","Pasture","Urban"),levels=levels(m1$data$LandUse)),
+Species_richness=0)
+
+# Generate predicted values for each land use, with uncertainty of 1 standard error
+# about the predicted mean values
+preds <- PredictGLMER(preds <- PredictGLMER(model = m1$model,data = predDat,
+se.fit = TRUE,seMultiplier = 1))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
