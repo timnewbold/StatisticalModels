@@ -13,7 +13,11 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   # Get the names of the labels and coefficient names for each factor
   # If align is specified, then use the full set of labels defined above
   for (e in catEffects){
-    names<-levels(model@frame[,e])
+    if (class(model)=="glmmadmb"){
+      names<-levels(model$frame[,e])
+    } else {
+      names<-levels(model@frame[,e])
+    }
     labels<-c(labels,names)
     coef.labels<-c(coef.labels,paste(e,names,sep=""))
   }
@@ -21,8 +25,14 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   # Get coefficient and standard error estimates from the model
   o<-match(tolower(coef.labels),tolower(names(fixef(model))))
   y<-fixef(model)[o]
-  yplus<-y+se.fixef(model)[o]*seMultiplier
-  yminus<-y-se.fixef(model)[o]*seMultiplier
+  if (class(model)=="glmmadmb"){
+    yplus<-y+summary(model)$stdbeta[o]*seMultiplier
+    yminus<-y-summary(model)$stdbeta[o]*seMultiplier
+  } else {
+    yplus<-y+se.fixef(model)[o]*seMultiplier
+    yminus<-y-se.fixef(model)[o]*seMultiplier
+  }
+  
   
   # For each categorical effect, get the reference level
   for (e in catEffects){
