@@ -36,7 +36,11 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   
   # For each categorical effect, get the reference level
   for (e in catEffects){
-    ref.name<-paste(e,levels(model@frame[,e])[1],sep="")
+    if (class(model)=="glmmadmb"){
+      ref.name<-paste(e,levels(model$frame[,e])[1],sep="")
+    } else {
+      ref.name<-paste(e,levels(model@frame[,e])[1],sep="")
+    }
     o<-match(tolower(ref.name),tolower(coef.labels))
     y[o]<-0
     yplus[o]<-0
