@@ -67,7 +67,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   }
   stats$Df<-NA
   stats$P<-NA
-  stats$dAIC<-NA
+  if (fitFamily != "quasipoisson"){
+    stats$dAIC<-NA
+  }
   
   iter<-1
   
@@ -94,7 +96,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       Devs <- numeric()
     }
     Dfs<-character()
-    dAICs<-numeric()
+    if (fitFamily != "quasipoisson"){
+      dAICs<-numeric()
+    }
     
     for (t in iTerms){
       t1<-gsub("[(]","[(]",t)
@@ -122,7 +126,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
         pVals<-c(pVals,anova(mOld,mNew,test = "Chi")$Pr[2])
         Devs<-c(Devs,-anova(mOld,mNew,test = "Chi")$Deviance[2])
         Dfs<-c(Dfs,-anova(mOld,mNew,test = "Chi")$Df[2])
-        dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+        if (fitFamily != "quasipoisson"){
+          dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+        }
       }
       
       
@@ -140,10 +146,11 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     }
     stats$Df[which(stats$terms==dropI)]<- Dfs[order(pVals)[length(order(pVals))]]
     stats$P[which(stats$terms==dropI)]<-pVals[order(pVals)[length(order(pVals))]]
-    stats$dAIC[which(stats$terms==dropI)]<-dAICs[order(pVals)[length(order(pVals))]]
+    if (fitFamily != "quasipoisson"){
+      stats$dAIC[which(stats$terms==dropI)]<-dAICs[order(pVals)[length(order(pVals))]]
+    }
     
     cat(paste("Dropping ",dropI,"\n",sep=""))
-    
     
     t1<-gsub("[(]","[(]",dropI)
     t2<-gsub("[)]","[)]",t1)
@@ -169,7 +176,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   }
   stats$Df[na.omit(match(iTerms,stats$terms))]<- Dfs
   stats$P[na.omit(match(iTerms,stats$terms))]<-pVals
-  stats$dAIC[na.omit(match(iTerms,stats$terms))]<-dAICs
+  if (fitFamily != "quasipoisson"){
+    stats$dAIC[na.omit(match(iTerms,stats$terms))]<-dAICs
+  }
   
   for (t in iTerms){
     t1<-gsub("[(]","[(]",t)
@@ -182,7 +191,6 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     
     call.old<-gsub(t3,"",call.old)
   }
-  
   
   itersRemaining<-which(allTerms %in% iTerms)
   if (length(itersRemaining)>0) allTerms<-allTerms[-itersRemaining]
@@ -212,7 +220,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       Devs <- numeric()
     }
     Dfs<-character()
-    dAICs<-numeric()
+    if (fitFamily != "quasipoisson"){
+      dAICs<-numeric()
+    }
     
     for (t in mTerms){
       if ((grepl("poly",t)) & grepl(",3",t)){
@@ -255,7 +265,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
         pVals<-c(pVals,anova(mOld,mNew,test = "Chi")$Pr[2])
         Devs<-c(Devs,-anova(mOld,mNew,test = "Chi")$Deviance[2])
         Dfs<-c(Dfs,-anova(mOld,mNew,test = "Chi")$Df[2])
-        dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+        if (fitFamily != "quasipoisson"){
+          dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+        }
       }
     }
     
@@ -272,7 +284,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     }
     stats$Df[which(stats$terms==dropM)]<- Dfs[order(pVals)[length(order(pVals))]]
     stats$P[which(stats$terms==dropM)]<-pVals[order(pVals)[length(order(pVals))]]
-    stats$dAIC[which(stats$terms==dropM)]<-dAICs[order(pVals)[length(order(pVals))]]
+    if (fitFamily != "quasipoisson"){
+      stats$dAIC[which(stats$terms==dropM)]<-dAICs[order(pVals)[length(order(pVals))]]
+    }
     
     if ((grepl("poly", dropM)) & grepl(",3", dropM)) {
       cat(paste("Simplifying ", dropM, "\n", sep = ""))
@@ -325,7 +339,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   }
   stats$Df[na.omit(match(mTerms,stats$terms))]<- Dfs
   stats$P[na.omit(match(mTerms,stats$terms))]<-pVals
-  stats$dAIC[na.omit(match(mTerms,stats$terms))]<-dAICs
+  if (fitFamily != "quasipoisson"){
+    stats$dAIC[na.omit(match(mTerms,stats$terms))]<-dAICs
+  }
   
   sig.terms<-stats[stats$P<0.05,]
   sig.terms<-na.omit(sig.terms)
