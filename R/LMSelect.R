@@ -5,16 +5,14 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
                      allInteractions=FALSE,
                      saveVars=character(0)){
   
-  ## TODO: return the results of this function as a specific class
-  
   contEffectNames<-names(contEffects)
   
   if ((length(interactions)>0) & (allInteractions)){
     stop("Error: specifying particular interactions and all two-way interactions will not work!")
   }
-
+  
   model.data<-subset(modelData,select=c(factors,names(contEffects),
-                                       responseVar,saveVars))
+                                        responseVar,saveVars))
   
   
   model.data<-na.omit(model.data)
@@ -42,7 +40,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   }
   
   call.old<-paste(responseVar,"~",paste(allTerms,collapse="+"),sep="")
-
+  
   stats<-data.frame(terms=allTerms)
   
   polyTerms2 <- paste(stats$terms[grep("poly[(].{1,},2[)]", 
@@ -62,7 +60,11 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   polyTerms3 <- gsub(",2", ",1", polyTerms3)
   stats <- rbind(stats, data.frame(terms = polyTerms3))
   stats$terms<-paste(stats$terms)
-  stats$F<-NA
+  if (fitFamily=="gaussian"){
+    stats$F<-NA
+  } else {
+    stats$Deviance<-NA
+  }
   stats$Df<-NA
   stats$P<-NA
   stats$dAIC<-NA
@@ -71,9 +73,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   
   repeat {
     
-    .Log(paste("Performing round ",iter," of interaction-term removal\n",sep=""))
+    cat(paste("Performing round ",iter," of interaction-term removal\n",sep=""))
     
-    .Log(paste(call.old,"\n",sep=""))
+    cat(paste(call.old,"\n",sep=""))
     
     if (fitFamily=="gaussian"){
       mOld<-lm(call.old,data=model.data)
@@ -86,7 +88,11 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     iTerms<-gsub(" ","",iTerms)
     
     pVals<-numeric()
-    Fs<-numeric()
+    if (fitFamily=="gaussian"){
+      Fs<-numeric()
+    } else {
+      Devs <- numeric()
+    }
     Dfs<-character()
     dAICs<-numeric()
     
@@ -100,32 +106,43 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       }
       
       call.new<-gsub(t3,"",call.old)
-    
+      
       if (fitFamily=="gaussian"){
         mNew<-lm(call.new,data=model.data)
       } else {
         mNew<-glm(call.new,family=fitFamily,data=model.data)
       }
       
+      if (fitFamily=="gaussian"){
+        pVals<-c(pVals,anova(mOld,mNew)$Pr[2])
+        Fs<-c(Fs,anova(mOld,mNew)$F[2])
+        Dfs<-c(Dfs,-anova(mOld,mNew)$Df[2])
+        dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+      } else {
+        pVals<-c(pVals,anova(mOld,mNew,test = "Chi")$Pr[2])
+        Devs<-c(Devs,-anova(mOld,mNew,test = "Chi")$Deviance[2])
+        Dfs<-c(Dfs,-anova(mOld,mNew,test = "Chi")$Df[2])
+        dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+      }
       
-      pVals<-c(pVals,anova(mOld,mNew)$Pr[2])
-      Fs<-c(Fs,anova(mOld,mNew)$F[2])
-      Dfs<-c(Dfs,anova(mOld,mNew)$Df[2])
-      dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+      
     }
-  
-    .Log(paste(length(which(pVals>0.05))," interaction terms have P-values >0.05\n",sep=""))
+    
+    cat(paste(length(which(pVals>0.05))," interaction terms have P-values >0.05\n",sep=""))
     
     if (length(which(pVals>0.05))==0) break
     
     dropI<-iTerms[order(pVals)[length(order(pVals))]]
-    
-    stats$F[which(stats$terms==dropI)]<-Fs[order(pVals)[length(order(pVals))]]
-    stats$Df[which(stats$terms==dropI)]<-Dfs[order(pVals)[length(order(pVals))]]
+    if (fitFamily=="gaussian"){
+      stats$F[which(stats$terms==dropI)]<-Fs[order(pVals)[length(order(pVals))]]
+    } else {
+      stats$Deviance[which(stats$terms==dropI)]<-Devs[order(pVals)[length(order(pVals))]]
+    }
+    stats$Df[which(stats$terms==dropI)]<- Dfs[order(pVals)[length(order(pVals))]]
     stats$P[which(stats$terms==dropI)]<-pVals[order(pVals)[length(order(pVals))]]
     stats$dAIC[which(stats$terms==dropI)]<-dAICs[order(pVals)[length(order(pVals))]]
     
-    .Log(paste("Dropping ",dropI,"\n",sep=""))
+    cat(paste("Dropping ",dropI,"\n",sep=""))
     
     
     t1<-gsub("[(]","[(]",dropI)
@@ -145,8 +162,12 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     
   }
   
-  stats$F[na.omit(match(iTerms,stats$terms))]<-Fs
-  stats$Df[na.omit(match(iTerms,stats$terms))]<-Dfs
+  if (fitFamily=="gaussian"){
+    stats$F[na.omit(match(iTerms,stats$terms))]<-Fs
+  } else {
+    stats$Deviance[na.omit(match(iTerms,stats$terms))]<-Devs
+  }
+  stats$Df[na.omit(match(iTerms,stats$terms))]<- Dfs
   stats$P[na.omit(match(iTerms,stats$terms))]<-pVals
   stats$dAIC[na.omit(match(iTerms,stats$terms))]<-dAICs
   
@@ -170,14 +191,14 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   
   repeat {
     
-    .Log(paste("Performing round ",iter," of main-effect removal\n",sep=""))
+    cat(paste("Performing round ",iter," of main-effect removal\n",sep=""))
     
-    .Log(paste(call.old,"\n",sep=""))
+    cat(paste(call.old,"\n",sep=""))
     
     if (fitFamily=="gaussian"){
       mOld<-lm(call.old,data=model.data)
     } else {
-      mOld<-glmer(call.old,family=fitFamily,data=model.data)
+      mOld<-glm(call.old,family=fitFamily,data=model.data)
     }
     
     mTerms<-allTerms
@@ -185,10 +206,14 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     mTerms<-gsub(" ","",mTerms)
     
     pVals<-numeric()
-    Fs<-numeric()
+    if(fitFamily=="gaussian"){
+      Fs<-numeric()
+    } else {
+      Devs <- numeric()
+    }
     Dfs<-character()
     dAICs<-numeric()
-  
+    
     for (t in mTerms){
       if ((grepl("poly",t)) & grepl(",3",t)){
         t1<-gsub("[(]","[(]",t)
@@ -221,27 +246,36 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
         mNew<-glm(call.new,family=fitFamily,data=model.data)
       }
       
-      
-      pVals<-c(pVals,anova(mOld,mNew)$Pr[2])
-      Fs<-c(Fs,anova(mOld,mNew)$F[2])
-      Dfs<-c(Dfs,anova(mOld,mNew)$Df[2])
-      dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
-      
+      if (fitFamily=="gaussian"){
+        pVals<-c(pVals,anova(mOld,mNew)$Pr[2])
+        Fs<-c(Fs,anova(mOld,mNew)$F[2])
+        Dfs<-c(Dfs,-anova(mOld,mNew)$Df[2])
+        dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+      } else {
+        pVals<-c(pVals,anova(mOld,mNew,test = "Chi")$Pr[2])
+        Devs<-c(Devs,-anova(mOld,mNew,test = "Chi")$Deviance[2])
+        Dfs<-c(Dfs,-anova(mOld,mNew,test = "Chi")$Df[2])
+        dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
+      }
     }
     
-    .Log(paste(length(which(pVals>0.05))," candidate main effects have P-values >0.05\n",sep=""))
+    cat(paste(length(which(pVals>0.05))," candidate main effects have P-values >0.05\n",sep=""))
     
     if (length(which(pVals>0.05))==0) break
     
     dropM<-mTerms[order(pVals)[length(order(pVals))]]
     
-    stats$F[which(stats$terms==dropM)]<-Fs[order(pVals)[length(order(pVals))]]
-    stats$Df[which(stats$terms==dropM)]<-Dfs[order(pVals)[length(order(pVals))]]
+    if (fitFamily=="gaussian"){
+      stats$F[which(stats$terms==dropM)]<-Fs[order(pVals)[length(order(pVals))]]
+    } else {
+      stats$Deviance[which(stats$terms==dropM)]<-Devs[order(pVals)[length(order(pVals))]]
+    }
+    stats$Df[which(stats$terms==dropM)]<- Dfs[order(pVals)[length(order(pVals))]]
     stats$P[which(stats$terms==dropM)]<-pVals[order(pVals)[length(order(pVals))]]
     stats$dAIC[which(stats$terms==dropM)]<-dAICs[order(pVals)[length(order(pVals))]]
     
     if ((grepl("poly", dropM)) & grepl(",3", dropM)) {
-      .Log(paste("Simplifying ", dropM, "\n", sep = ""))
+      cat(paste("Simplifying ", dropM, "\n", sep = ""))
       d1 <- gsub("[(]", "[(]", dropM)
       d2 <- gsub("[)]", "[)]", d1)
       d3 <- gsub(",3", ",2", dropM)
@@ -249,7 +283,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       mTerms <- gsub(d2, d3, mTerms)
       allTerms <- gsub(d2, d3, allTerms)
     } else if ((grepl("poly",dropM)) & grepl(",2",dropM)){
-      .Log(paste("Simplifying ",dropM,"\n",sep=""))
+      cat(paste("Simplifying ",dropM,"\n",sep=""))
       
       d1<-gsub("[(]","[(]",dropM)
       d2<-gsub("[)]","[)]",d1)
@@ -261,7 +295,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       allTerms<-gsub(d2,d3,allTerms)
       
     } else {
-      .Log(paste("Dropping ",dropM,"\n",sep=""))
+      cat(paste("Dropping ",dropM,"\n",sep=""))
       t1<-gsub("[(]","[(]",dropM)
       t2<-gsub("[)]","[)]",t1)
       if (t != tail(allTerms,1)){
@@ -284,8 +318,12 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     
   }
   
-  stats$F[na.omit(match(mTerms,stats$terms))]<-Fs
-  stats$Df[na.omit(match(mTerms,stats$terms))]<-Dfs
+  if (fitFamily=="gaussian"){
+    stats$F[na.omit(match(mTerms,stats$terms))]<-Fs
+  } else {
+    stats$Deviance[na.omit(match(mTerms,stats$terms))]<-Devs
+  }
+  stats$Df[na.omit(match(mTerms,stats$terms))]<- Dfs
   stats$P[na.omit(match(mTerms,stats$terms))]<-pVals
   stats$dAIC[na.omit(match(mTerms,stats$terms))]<-dAICs
   
@@ -316,7 +354,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     return(LM(model=mBest,data=model.data,stats=stats,final.call=call.best,
               family=fitFamily))
   } else {
-    .Log("Warning: all terms dropped from the model")
+    cat("Warning: all terms dropped from the model")
     return(LM(model=lm(0~0),data=model.data,stats=stats,final.call="",
               family=fitFamily))
   }

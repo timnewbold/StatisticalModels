@@ -66,7 +66,7 @@ plot.LM <- function(x, ...) {
 }
 
 LM<-function(model,data,stats,final.call,family){
-  stopifnot("lm"==class(model))
+  stopifnot(("lm"==class(model)) | ("glm"==class(model)))
   stopifnot(is.data.frame(data))
   stopifnot(is.data.frame(stats))
   stopifnot(is.character(final.call))
