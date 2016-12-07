@@ -8,7 +8,7 @@ SpatialAutocorrelationTest <- function(model){
   
   ds.nb<-try(dnearneigh(cbind(model$data$Longitude,model$data$Latitude),
                         d1=0.00000001,d2=10),silent=TRUE)
-  ds.listw<-try(nb2listw(ds.nb),silent=TRUE)
+  ds.listw<-try(nb2listw(ds.nb,style = "W",zero.policy = TRUE),silent=TRUE)
   mt<-tryCatch(moran.test(residuals(model$model),ds.listw),silent=TRUE,error=function(e) e, 
                warning=function(w) w)
   
