@@ -75,9 +75,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   
   repeat {
     
-    cat(paste("Performing round ",iter," of interaction-term removal\n",sep=""))
+    .Log(paste("Performing round ",iter," of interaction-term removal\n",sep=""))
     
-    cat(paste(call.old,"\n",sep=""))
+    .Log(paste(call.old,"\n",sep=""))
     
     if (fitFamily=="gaussian"){
       mOld<-lm(call.old,data=model.data)
@@ -134,7 +134,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       
     }
     
-    cat(paste(length(which(pVals>0.05))," interaction terms have P-values >0.05\n",sep=""))
+    .Log(paste(length(which(pVals>0.05))," interaction terms have P-values >0.05\n",sep=""))
     
     if (length(which(pVals>0.05))==0) break
     
@@ -150,7 +150,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       stats$dAIC[which(stats$terms==dropI)]<-dAICs[order(pVals)[length(order(pVals))]]
     }
     
-    cat(paste("Dropping ",dropI,"\n",sep=""))
+    .Log(paste("Dropping ",dropI,"\n",sep=""))
     
     t1<-gsub("[(]","[(]",dropI)
     t2<-gsub("[)]","[)]",t1)
@@ -199,9 +199,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
   
   repeat {
     
-    cat(paste("Performing round ",iter," of main-effect removal\n",sep=""))
+    .Log(paste("Performing round ",iter," of main-effect removal\n",sep=""))
     
-    cat(paste(call.old,"\n",sep=""))
+    .Log(paste(call.old,"\n",sep=""))
     
     if (fitFamily=="gaussian"){
       mOld<-lm(call.old,data=model.data)
@@ -271,7 +271,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       }
     }
     
-    cat(paste(length(which(pVals>0.05))," candidate main effects have P-values >0.05\n",sep=""))
+    .Log(paste(length(which(pVals>0.05))," candidate main effects have P-values >0.05\n",sep=""))
     
     if (length(which(pVals>0.05))==0) break
     
@@ -289,7 +289,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     }
     
     if ((grepl("poly", dropM)) & grepl(",3", dropM)) {
-      cat(paste("Simplifying ", dropM, "\n", sep = ""))
+      .Log(paste("Simplifying ", dropM, "\n", sep = ""))
       d1 <- gsub("[(]", "[(]", dropM)
       d2 <- gsub("[)]", "[)]", d1)
       d3 <- gsub(",3", ",2", dropM)
@@ -297,7 +297,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       mTerms <- gsub(d2, d3, mTerms)
       allTerms <- gsub(d2, d3, allTerms)
     } else if ((grepl("poly",dropM)) & grepl(",2",dropM)){
-      cat(paste("Simplifying ",dropM,"\n",sep=""))
+      .Log(paste("Simplifying ",dropM,"\n",sep=""))
       
       d1<-gsub("[(]","[(]",dropM)
       d2<-gsub("[)]","[)]",d1)
@@ -309,7 +309,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       allTerms<-gsub(d2,d3,allTerms)
       
     } else {
-      cat(paste("Dropping ",dropM,"\n",sep=""))
+      .Log(paste("Dropping ",dropM,"\n",sep=""))
       t1<-gsub("[(]","[(]",dropM)
       t2<-gsub("[)]","[)]",t1)
       if (t != tail(allTerms,1)){
@@ -370,7 +370,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     return(LM(model=mBest,data=model.data,stats=stats,final.call=call.best,
               family=fitFamily))
   } else {
-    cat("Warning: all terms dropped from the model")
+    .Log("Warning: all terms dropped from the model")
     return(LM(model=lm(0~0),data=model.data,stats=stats,final.call="",
               family=fitFamily))
   }
