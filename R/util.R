@@ -1,5 +1,5 @@
 .Log <- function(...) {
-  if(getOption('SMverbose', TRUE)) cat(...)
+  if(getOption('SMVerbose', TRUE)) cat(...)
 }
 
 .SetPar<-function(parList){
