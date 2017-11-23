@@ -3,6 +3,11 @@ PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96){
   # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
   
   mm<-model.matrix(terms(model),data)
+  
+  if(ncol(mm)>length(fixef(model))){
+    mm <- mm[,-which(!(names(mm[1,]) %in% names(fixef(cm$model))))]
+  }
+  
   y <- mm %*% fixef(model)
   
   if (se.fit){
