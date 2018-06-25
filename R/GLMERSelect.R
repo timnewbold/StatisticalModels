@@ -27,13 +27,16 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
   
   allTerms<-character(0)
   fixedStruct<-""
-  for (i in 1:length(fixedFactors)){
-    fixedStruct<-paste(fixedStruct,fixedFactors[i],sep="")
-    allTerms<-c(allTerms,fixedFactors[i])
-    if ((i != length(fixedFactors)) | (length(fixedTerms)>0) | 
+  
+  if (length(fixedFactors)>0){
+    for (i in 1:length(fixedFactors)){
+      fixedStruct<-paste(fixedStruct,fixedFactors[i],sep="")
+      allTerms<-c(allTerms,fixedFactors[i])
+      if ((i != length(fixedFactors)) | (length(fixedTerms)>0) | 
           ((length(fixedTerms)==0) & (
             length(fixedInteractions)>0))){
-      fixedStruct<-paste(fixedStruct,"+",sep="")
+        fixedStruct<-paste(fixedStruct,"+",sep="")
+      }
     }
   }
   if (length(fixedTerms)>0){
