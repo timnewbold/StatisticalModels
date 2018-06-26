@@ -1,6 +1,6 @@
 GLMER<-function(modelData,responseVar,fitFamily,fixedStruct,
-                      randomStruct,saveVars=character(0),REML=TRUE,
-                     optimizer="bobyqa",maxIters=10000){
+                randomStruct,saveVars=character(0),REML=TRUE,
+                optimizer="bobyqa",maxIters=10000,ADMB=FALSE){
   
   call.best<-.ConstructCall(responseVar,fixedStruct,randomStruct)
   
@@ -28,16 +28,20 @@ GLMER<-function(modelData,responseVar,fitFamily,fixedStruct,
   modelData<-subset(modelData,select=c(allTerms))
   modelData<-na.omit(modelData)
   
-  if (fitFamily=="gaussian"){
-    eval(substitute(m<-lmer(cb,data=modelData,lmerControl(optimizer = optimizer,
-                                                           optCtrl = list(maxfun=maxIters)),
-                            REML=REML),
-                    list(cb=call.best)))
+  if(ADMB){
+    m <- glmmadmb(formula = as.formula(call.best),data = modelData,family = fitFamily)
   } else {
-    eval(substitute(m<-glmer(cb,family=fitFamily,data=modelData,
-                             control=glmerControl(optimizer = optimizer,
-                                                  optCtrl = list(maxfun=maxIters))),
-                    list(cb=call.best)))
+    if (fitFamily=="gaussian"){
+      eval(substitute(m<-lmer(cb,data=modelData,lmerControl(optimizer = optimizer,
+                                                            optCtrl = list(maxfun=maxIters)),
+                              REML=REML),
+                      list(cb=call.best)))
+    } else {
+      eval(substitute(m<-glmer(cb,family=fitFamily,data=modelData,
+                               control=glmerControl(optimizer = optimizer,
+                                                    optCtrl = list(maxfun=maxIters))),
+                      list(cb=call.best)))
+    }
   }
   
   
