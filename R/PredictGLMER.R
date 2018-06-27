@@ -4,11 +4,11 @@ PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96){
   
   mm<-model.matrix(terms(model),data)
   
-  if(ncol(mm)>length(fixef(model))){
-    mm <- mm[,-which(!(names(mm[1,]) %in% names(fixef(model$model))))]
+  if(ncol(mm)>length(lme4::fixef(model))){
+    mm <- mm[,-which(!(names(mm[1,]) %in% names(lme4::fixef(model$model))))]
   }
   
-  y <- mm %*% fixef(model)
+  y <- mm %*% lme4::fixef(model)
   
   if (se.fit){
     pvar1 <- diag(mm %*% base::tcrossprod(as.matrix(vcov(model)),mm))
