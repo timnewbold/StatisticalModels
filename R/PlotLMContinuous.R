@@ -1,4 +1,5 @@
 PlotLMContinuous <- function(model,terms,se.fit=FALSE,seMultiplier=1.96,
+                             line.col="#000000",
                              xlim=NULL,ylim=NULL,zlim=NULL,
                              xlab=NULL,ylab=NULL,zlab=NULL,
                              params=list(),
@@ -102,8 +103,8 @@ PlotLMContinuous <- function(model,terms,se.fit=FALSE,seMultiplier=1.96,
         X.Vec <- xTransform(c(nd[,terms[1]], max(nd[,terms[1]]), 
                               rev(nd[,terms[1]]), min(nd[,terms[1]])))
         Y.Vec <- c(y.minus, tail(y.plus, 1), rev(y.plus), (y.minus)[1])
-        polygon(X.Vec,Y.Vec,col="#00000033",border = NA)
-        points(xTransform(nd[,terms[1]]),y,type="l")
+        polygon(X.Vec,Y.Vec,col=paste0(line.col,"33"),border = NA)
+        points(xTransform(nd[,terms[1]]),y,type="l",col=line.col)
         
         
       } else {
