@@ -182,7 +182,7 @@ PlotGLMERContinuous<-function(model,data,effects,byContEffect=NULL,
       mm<-model.matrix(terms(model),newdat)
       
       if(ncol(mm)>length(fixef(model))){
-        mm <- mm[,-which(!(names(mm[1,]) %in% names(fixef(cm$model))))]
+        mm <- mm[,-which(!(names(mm[1,]) %in% names(fixef(model))))]
       }
       
       pvar1 <- diag(mm %*% base::tcrossprod(as.matrix(vcov(model)),mm))
