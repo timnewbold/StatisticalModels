@@ -120,12 +120,17 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       if (fitFamily=="gaussian"){
         pVals<-c(pVals,anova(mOld,mNew)$Pr[2])
         Fs<-c(Fs,anova(mOld,mNew)$F[2])
-        Dfs<-c(Dfs,-anova(mOld,mNew)$Df[2])
+        Dfs<-c(Dfs,paste(
+          anova(mOld,mNew)$Df[2],
+          -anova(mOld,mNew)$Df[2],sep=","))
         dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
       } else {
         pVals<-c(pVals,anova(mOld,mNew,test = "Chi")$Pr[2])
         Devs<-c(Devs,-anova(mOld,mNew,test = "Chi")$Deviance[2])
-        Dfs<-c(Dfs,-anova(mOld,mNew,test = "Chi")$Df[2])
+        Dfs<-c(Dfs,paste(
+          -anova(mOld,mNew,test = "Chi")$Df[2],
+          anova(mOld,mNew,test = "Chi")$Res.Df[2],
+          sep=","))
         if (fitFamily != "quasipoisson"){
           dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
         }
@@ -259,12 +264,17 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       if (fitFamily=="gaussian"){
         pVals<-c(pVals,anova(mOld,mNew)$Pr[2])
         Fs<-c(Fs,anova(mOld,mNew)$F[2])
-        Dfs<-c(Dfs,-anova(mOld,mNew)$Df[2])
+        Dfs<-c(Dfs,paste(
+          -anova(mOld,mNew)$Df[2],
+          anova(mOld,mNew)$Res.Df[2],sep=","))
         dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
       } else {
         pVals<-c(pVals,anova(mOld,mNew,test = "Chi")$Pr[2])
         Devs<-c(Devs,-anova(mOld,mNew,test = "Chi")$Deviance[2])
-        Dfs<-c(Dfs,-anova(mOld,mNew,test = "Chi")$Df[2])
+        Dfs<-c(Dfs,paste(
+          -anova(mOld,mNew,test = "Chi")$Df[2],
+          anova(mOld,mNew,test = "Chi")$Res.Df[2],
+          sep=","))
         if (fitFamily != "quasipoisson"){
           dAICs<-c(dAICs,AIC(mNew)-AIC(mOld))
         }
