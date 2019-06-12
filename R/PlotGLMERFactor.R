@@ -2,8 +2,9 @@
 PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
                      logLink="n",catEffects=NULL,
                      xtext.srt=0,ylim=NA,yaxp=NULL,order=NULL,rescale=NULL,
-                     errbar.cols=NULL,pt.pch=NULL,
-                     errbar.lty=1,
+                     errbar.cols=NULL,
+                     errbar.cap = 0.015,errbar.lwd = 1,
+                     pt.pch=NULL,errbar.lty=1,
                      params=list(),add=FALSE,offset=0,
                      plotLabels=TRUE,cex.txt=NULL,pt.cex=1,
                      pt.bg="white",main=NULL,type="percent"){
@@ -64,13 +65,19 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   
   intercept<-fixef(model)['(Intercept)']
   if (logLink=="e"){
-    y<-(exp(y+ifelse(type=="percent",0,intercept)))
-    yplus<-(exp(yplus+ifelse(type=="percent",0,intercept)))
-    yminus<-(exp(yminus+ifelse(type=="percent",0,intercept)))
+    y<-(exp(y+ifelse(type=="percent",0,intercept))) - 
+      ifelse(type=="percent",0,exp(intercept))
+    yplus<-(exp(yplus+ifelse(type=="percent",0,intercept))) - 
+      ifelse(type=="percent",0,exp(intercept))
+    yminus<-(exp(yminus+ifelse(type=="percent",0,intercept))) - 
+      ifelse(type=="percent",0,exp(intercept))
   } else if (logLink=="10") {
-    y<-(10^(y+ifelse(type=="percent",0,intercept)))
-    yplus<-(10^(yplus+ifelse(type=="percent",0,intercept)))
-    yminus<-(10^(yminus+ifelse(type=="percent",0,intercept)))
+    y<-(10^(y+ifelse(type=="percent",0,intercept))) - 
+      ifelse(type=="percent",0,10^(intercept))
+    yplus<-(10^(yplus+ifelse(type=="percent",0,intercept))) - 
+      ifelse(type=="percent",0,10^(intercept))
+    yminus<-(10^(yminus+ifelse(type=="percent",0,intercept))) - 
+      ifelse(type=="percent",0,10^(intercept))
   } else if (logLink=="inv10") {
     y<-(1/(10^(y)))
     yplus<-(1/(10^(yplus+ifelse(type=="percent",0,intercept))))
@@ -175,10 +182,10 @@ PlotGLMERFactor<-function(model,data,responseVar,seMultiplier=1.96,
   
   if(is.null(yaxp)){
     errbar((1:length(labels))+offset,y,yplus,yminus,col=plot.cols,errbar.col=plot.cols,
-           add=T,pch=pt.pch,cex=pt.cex,lty=errbar.lty)
+           add=T,pch=pt.pch,cex=pt.cex,lty=errbar.lty,cap=errbar.cap,lwd=errbar.lwd)
   } else {
     errbar((1:length(labels))+offset,y,yplus,yminus,col=plot.cols,errbar.col=plot.cols,
-           add=T,pch=pt.pch,cex=pt.cex,lty=errbar.lty)
+           add=T,pch=pt.pch,cex=pt.cex,lty=errbar.lty,cap=errbar.cap,lwd=errbar.lwd)
   }
   
   if (pt.bg == "match"){
