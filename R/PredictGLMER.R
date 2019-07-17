@@ -1,4 +1,4 @@
-PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96){
+PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96,randEffs = FALSE){
   
   # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
   
@@ -13,8 +13,17 @@ PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96){
   
   if (se.fit){
     pvar1 <- diag(mm %*% base::tcrossprod(as.matrix(vcov(model)),mm))
+    
+    if(randEffs){
+      cat('WARNING: May not work for models with random slopes\n')
+      pvar1 <- pvar1 + sum(unlist(lapply(X = VarCorr(sr1$model),
+                                         FUN = function(x) return(x[1]))))
+    }
+    
     yplus <- y + seMultiplier * sqrt(pvar1)
     yminus <- y - seMultiplier * sqrt(pvar1)
+    
+    
     
     
     return(data.frame(y=y,yplus=yplus,yminus=yminus))
