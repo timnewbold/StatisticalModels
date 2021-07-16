@@ -7,4 +7,4 @@ Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
-Depends: lme4, arm, Hmisc, RColorBrewer, mgcv, spdep, MASS
+Depends: lme4, arm, Hmisc, RColorBrewer, mgcv, spdep, MASS, parallel, snow
