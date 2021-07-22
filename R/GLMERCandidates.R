@@ -14,7 +14,8 @@ GLMERCandidates <- function(modelData,responseVar,fitFamily,candidateFixedStruct
   # Export necessary data to the cluster
   snow::clusterExport(cl = cl,list = c("modelData","responseVar","fitFamily",
                                        "randomStruct","saveVars","REML",
-                                       "optimizer","maxIters","ADMB"))
+                                       "optimizer","maxIters","ADMB"),
+                      envir = environment())
   
   # Load the lme4 package on each node in the cluster
   invisible(snow::clusterCall(cl = cl,fun = function() library(lme4)))
