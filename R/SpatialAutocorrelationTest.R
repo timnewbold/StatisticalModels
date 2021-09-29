@@ -59,7 +59,7 @@ SpatialAutocorrelationTest <- function(model,ranefGrouping=NULL){
       i<-i+1
     }
     
-    return(list(studies=studies,I=moran.i,P=moran.p,failed=failed))
+    return(list(groups=groups,I=moran.i,P=moran.p,failed=failed))
     
   }
   
