@@ -32,10 +32,10 @@ SpatialAutocorrelationTest <- function(model,ranefGrouping=NULL){
     res <- residuals(model$model)
     
     i=1
-    for (grp in unique(modelData[,ranefGrouping])){
+    for (grp in unique(model$data[,ranefGrouping])){
       cat(paste("\rProcessing group ",i," of ",
-                length(unique(modelData[,ranefGrouping])),sep=""))
-      data.sub<-droplevels(model.data[modelData[,ranefGrouping]==grp,])
+                length(unique(model$data[,ranefGrouping])),sep=""))
+      data.sub<-droplevels(model.data[model$data[,ranefGrouping]==grp,])
       
       ds.nb<-try(dnearneigh(cbind(data.sub$Longitude,data.sub$Latitude),
                             d1=0.00000001,d2=10),silent=TRUE)
