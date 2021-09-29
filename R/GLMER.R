@@ -45,8 +45,7 @@ GLMER<-function(modelData,responseVar,fitFamily,fixedStruct,
   }
   
   
-  
-  return(list(model=m,data=modelData))
-  
+  return(LM(model = m,data = modelData,stats = data.frame(),
+            final.call = call.best,family = fitFamily))
   
 }

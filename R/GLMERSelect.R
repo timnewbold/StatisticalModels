@@ -357,10 +357,20 @@ GLMERSelect<-function(modelData,responseVar,fitFamily,fixedFactors=
       mBest<-glmer(call.best,family=fitFamily,data=modelData,
                    control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
     }
-    return(list(model=mBest,data=modelData,stats=stats,final.call=call.best))
+    return(LM(model = mBest,data = modelData,stats = stats,
+              final.call = call.best,family = fitFamily))
   } else {
     print("Warning: all terms were dropped from the model")
-    return(list(model=NULL,data=modelData,stats=stats,final.call=NULL))
+    call.best<-.ConstructCall(responseVar,"1",randomStruct)
+    if (fitFamily=="gaussian"){
+      mBest <- lmer(call.best,data=modelData,REML=TRUE,
+                    lmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
+    } else {
+      mBest <- glmer(call.best,family=fitFamily,data=modelData,
+                     control=glmerControl(optimizer = optimizer,optCtrl=list(maxfun=maxIters)))
+    }
+    return(LM(model = mBest,data = modelData,stats = stats,
+              final.call = call.best,family = fitFamily))
   }
   
 }

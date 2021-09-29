@@ -41,11 +41,16 @@ is.LM <- function(x) {
 
 print.LM <- function(x, ...) {
   if(!is.LM(x)) stop('Not an LM')
-  if(x$family=="gaussian"){
+  if (class(x$model)=="lm"){
     cat('A linear model\n')
-  } else {
+  } else if (class(x$model)=="glm"){
+    cat('A generalized linear model of family ',x$family,'\n',sep='')
+  } else if (class(x$model)=="lmerMod"){
+    cat('A linear mixed-effects model\n')
+  } else if (class(x$model)=="glmerMod"){
     cat('A generalized linear model of family ',x$family,'\n',sep='')
   }
+  
   cat('Final call: ',x$final.call,'\n',sep='')
   invisible(x)
 }
@@ -53,8 +58,7 @@ print.LM <- function(x, ...) {
 summary.LM <- function(object, ...) {
   if(!is.LM(object)) stop('Not an LM')
   
-  return(list(R.squared=summary(object$model)$r.squared,
-              family=object$family,
+  return(list(family=object$family,
               call=object$final.call,
               stats=object$stats))
   
@@ -66,7 +70,8 @@ plot.LM <- function(x, ...) {
 }
 
 LM<-function(model,data,stats,final.call,family){
-  stopifnot(("lm"==class(model)) | ("glm"==class(model)))
+  stopifnot(("lm"==class(model)) | ("glm"==class(model))) | 
+    ("glmerMod"==class(model)) | ("lmerMod"==class(model))
   stopifnot(is.data.frame(data))
   stopifnot(is.data.frame(stats))
   stopifnot(is.character(final.call))
