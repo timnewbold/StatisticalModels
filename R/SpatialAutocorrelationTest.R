@@ -49,11 +49,11 @@ SpatialAutocorrelationTest <- function(model,ranefGrouping=NULL){
           moran.i<-c(moran.i,mt$statistic)
           moran.p<-c(moran.p,mt$p.value)
         } else {
-          failed<-c(failed,ss)
+          failed<-c(failed,grp)
         }
         
       } else {
-        failed<-c(failed,ss)
+        failed<-c(failed,grp)
       }
       
       i<-i+1
