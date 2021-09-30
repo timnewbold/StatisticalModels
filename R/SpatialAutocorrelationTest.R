@@ -31,6 +31,14 @@ SpatialAutocorrelationTest <- function(model,ranefGrouping=NULL){
     
     res <- residuals(model$model)
     
+    stopifnot(length(res)==nrow(model$data))
+    
+    model$data <- droplevels(model$data)
+    
+    res.split <- split(res,model$data[,ranefGrouping])
+    
+    stopifnot(all(names(res.split)==unique(model$data[,ranefGrouping])))
+    
     i=1
     for (grp in unique(model$data[,ranefGrouping])){
       cat(paste("\rProcessing group ",i," of ",
@@ -40,7 +48,7 @@ SpatialAutocorrelationTest <- function(model,ranefGrouping=NULL){
       ds.nb<-try(dnearneigh(cbind(data.sub$Longitude,data.sub$Latitude),
                             d1=0.00000001,d2=10),silent=TRUE)
       ds.listw<-try(nb2listw(ds.nb),silent=TRUE)
-      mt<-tryCatch(moran.test(res,ds.listw),silent=TRUE,error=function(e) e, 
+      mt<-tryCatch(moran.test(res.split[[i]],ds.listw),silent=TRUE,error=function(e) e, 
                    warning=function(w) w)
       
       if(class(mt)[1]=="htest"){
