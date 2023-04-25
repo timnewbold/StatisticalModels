@@ -8,7 +8,7 @@ PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96,randEffs = 
   # For each factor, check that levels in prediction data frame match levels
   # in model data frame
   invisible(sapply(X = model.factors,FUN = function(fac){
-    stopifnot(all(levels(data[[fac]]) == levels(model[[fac]])))
+    stopifnot(all(levels(data[[fac]]) == levels(model@frame[[fac]])))
   }))
   
   mm<-model.matrix(terms(model),data)

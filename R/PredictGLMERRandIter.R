@@ -8,7 +8,7 @@ PredictGLMERRandIter <- function(model,data,nIters=1000){
   # For each factor, check that levels in prediction data frame match levels
   # in model data frame
   invisible(sapply(X = model.factors,FUN = function(fac){
-    stopifnot(all(levels(data[[fac]]) == levels(model[[fac]])))
+    stopifnot(all(levels(data[[fac]]) == levels(model@frame[[fac]])))
   }))
   
   preds <- sapply(X = 1:nIters,FUN = function(i){

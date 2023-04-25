@@ -8,7 +8,7 @@ PredictGLMERMultiModel <- function(models,data,nIters=1000){
   # in model data frame
   invisible(lapply(X = models,FUN = function(mod){
     invisible(sapply(X = model.factors,FUN = function(fac){
-      stopifnot(all(levels(data[[fac]]) == levels(mod[[fac]])))
+      stopifnot(all(levels(data[[fac]]) == levels(mod@frame[[fac]])))
     }))
   }))
   
