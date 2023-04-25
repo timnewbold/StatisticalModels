@@ -1,5 +1,17 @@
 PredictGLMERMultiModel <- function(models,data,nIters=1000){
   
+  # Get names of model factors from prediction data frame
+  model.factors <- names(which(sapply(data,is.factor)))
+  
+  # For each candidate model and for each factor, 
+  # check that levels in prediction data frame match levels
+  # in model data frame
+  invisible(lapply(X = models,FUN = function(mod){
+    invisible(sapply(X = model.factors,FUN = function(fac){
+      stopifnot(all(levels(data[[fac]]) == levels(mod[[fac]])))
+    }))
+  }))
+  
   # Get AIC values of all models
   aics <- unlist(lapply(models,AIC))
   

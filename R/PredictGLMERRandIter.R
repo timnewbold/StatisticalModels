@@ -2,6 +2,15 @@ PredictGLMERRandIter <- function(model,data,nIters=1000){
   
   # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
   
+  # Get names of model factors from prediction data frame
+  model.factors <- names(which(sapply(data,is.factor)))
+  
+  # For each factor, check that levels in prediction data frame match levels
+  # in model data frame
+  invisible(sapply(X = model.factors,FUN = function(fac){
+    stopifnot(all(levels(data[[fac]]) == levels(model[[fac]])))
+  }))
+  
   preds <- sapply(X = 1:nIters,FUN = function(i){
     
     mm<-model.matrix(terms(model),data)
