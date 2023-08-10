@@ -9,7 +9,7 @@ Performs backward stepwise selection of fixed effects in a generalized linear mi
 GLMERSelect(modelData,responseVar,fitFamily,fixedFactors=
                          character(0),fixedTerms=list(),randomStruct,
                        fixedInteractions=character(0),fitInteractions=FALSE,
-                      verbose=FALSE,saveVars=character(0),
+                      alpha=0.05,verbose=FALSE,saveVars=character(0),
                       optimizer="bobyqa",maxIters=10000)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -38,6 +38,9 @@ Specific interaction terms to consider in the model, specified as a vector of st
   \item{fitInteractions}{
 Whether to fit all two-way interactions between the fixed effects in the model. Default is FALSE
 }
+\item{alpha}{
+The threshold P value used to determine the statistical significance of terms
+}
   \item{verbose}{
 Whether to report progress in detail
 }
@@ -54,7 +57,7 @@ The maximum number of iterations to allow by the optimizer (default is 10,000)
 \details{
 The specified random-effects structures is fixed.
 
-The model-selection routine starts with the most complex fixed-effects structure possible given the specified combination of explanatory variables and their interactions, and performs backward stepwise selection to obtain the minimum adequate model. Comparison of the fit of different models is based on likelihood-ratio tests. Interaction terms are tested first, and then removed to test main effects. All main effects that are part of significant interaction terms are retained in the final model regardless of their significance as main effects. ML estimation is used during selection of terms, and then REML is used for fitting the final model.
+The model-selection routine starts with the most complex fixed-effects structure possible given the specified combination of explanatory variables and their interactions, and performs backward stepwise selection to obtain the minimum adequate model. Comparison of the fit of different models is based on likelihood-ratio tests against a specified threshold P value (alpha), which defaults to 0.05. Interaction terms are tested first, and then removed to test main effects. All main effects that are part of significant interaction terms are retained in the final model regardless of their significance as main effects. ML estimation is used during selection of terms, and then REML is used for fitting the final model.
 }
 \value{
 model: the final minimum adequate model
