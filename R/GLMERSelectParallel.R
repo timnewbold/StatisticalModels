@@ -1,7 +1,7 @@
 GLMERSelectParallel<-function(modelData,responseVar,fitFamily,fixedFactors=
                         character(0),fixedTerms=list(),randomStruct,
                       fixedInteractions=character(0),fitInteractions=FALSE,
-                      verbose=FALSE,saveVars=character(0),
+                      alpha=0.05,verbose=FALSE,saveVars=character(0),
                       optimizer="bobyqa",maxIters=10000){
   
   contEffectNames<-names(fixedTerms)
@@ -189,9 +189,9 @@ GLMERSelectParallel<-function(modelData,responseVar,fitFamily,fixedFactors=
       print(pVals)
     }
     
-    print(paste(length(which(pVals>0.05))," interaction terms have P-values >0.05",sep=""))
+    print(paste(length(which(pVals>alpha))," interaction terms have P-values > alpha",sep=""))
     
-    if (length(which(pVals>0.05))==0) break
+    if (length(which(pVals>alpha))==0) break
     
     dropI<-iTerms[order(pVals)[length(order(pVals))]]
     
@@ -307,14 +307,14 @@ GLMERSelectParallel<-function(modelData,responseVar,fitFamily,fixedFactors=
     dAICs <- dAICs[match(mT,mTerms)]
     mT <- mT[match(mT,mTerms)]
     
-    print(paste(length(which(pVals>0.05))," candidate main effects have P-values >0.05",sep=""))
+    print(paste(length(which(pVals>alpha))," candidate main effects have P-values > alpha",sep=""))
     
     if (verbose){
       print(mTerms)
       print(pVals)
     }
     
-    if (length(which(pVals>0.05))==0) break
+    if (length(which(pVals>alpha))==0) break
     
     dropM<-mTerms[order(pVals)[length(order(pVals))]]
     
@@ -368,7 +368,7 @@ GLMERSelectParallel<-function(modelData,responseVar,fitFamily,fixedFactors=
   stats$dAIC[na.omit(match(mTerms,stats$terms))]<-dAICs
   
   fixedStruct<-""
-  sig.terms<-stats[stats$P<0.05,]
+  sig.terms<-stats[stats$P<alpha,]
   sig.terms<-na.omit(sig.terms)
   if (dim(sig.terms)[1]>0){
     sig.terms<-paste(sig.terms$terms)

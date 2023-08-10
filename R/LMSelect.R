@@ -3,6 +3,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
                        character(0),contEffects=list(),
                      interactions=character(0),
                      allInteractions=FALSE,
+                     alpha=0.05,
                      saveVars=character(0)){
   
   contEffectNames<-names(contEffects)
@@ -139,9 +140,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       
     }
     
-    .Log(paste(length(which(pVals>0.05))," interaction terms have P-values >0.05\n",sep=""))
+    .Log(paste(length(which(pVals>alpha))," interaction terms have P-values >alpha\n",sep=""))
     
-    if (length(which(pVals>0.05))==0) break
+    if (length(which(pVals>alpha))==0) break
     
     dropI<-iTerms[order(pVals)[length(order(pVals))]]
     if (fitFamily=="gaussian"){
@@ -281,9 +282,9 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
       }
     }
     
-    .Log(paste(length(which(pVals>0.05))," candidate main effects have P-values >0.05\n",sep=""))
+    .Log(paste(length(which(pVals>alpha))," candidate main effects have P-values > alpha\n",sep=""))
     
-    if (length(which(pVals>0.05))==0) break
+    if (length(which(pVals>alpha))==0) break
     
     dropM<-mTerms[order(pVals)[length(order(pVals))]]
     
@@ -353,7 +354,7 @@ LMSelect <- function(modelData,responseVar,fitFamily,factors=
     stats$dAIC[na.omit(match(mTerms,stats$terms))]<-dAICs
   }
   
-  sig.terms<-stats[stats$P<0.05,]
+  sig.terms<-stats[stats$P<alpha,]
   sig.terms<-na.omit(sig.terms)
   if (dim(sig.terms)[1]>0){
     sig.terms<-paste(sig.terms$terms)

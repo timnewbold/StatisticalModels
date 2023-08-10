@@ -35,13 +35,16 @@ Specific interaction terms to consider in the model, specified as a vector of st
   \item{allInteractions}{
 Whether to fit all two-way interactions between the fixed effects in the model. Default is FALSE
 }
+\item{alpha}{
+The threshold P value used to determine the statistical significance of terms
+}
   \item{saveVars}{
 Any variables in the original data frame to retain in the model data frame for later analysis  
 }
 }
 \details{
 
-The model-selection routine starts with the most complex structure possible given the specified combination of explanatory variables and their interactions, and performs backward stepwise selection to obtain the minimum adequate model. Comparison of the fit of different models is based on likelihood-ratio tests. Interaction terms are tested first, and then removed to test main effects. All main effects that are part of significant interaction terms are retained in the final model regardless of their significance as main effects.
+The model-selection routine starts with the most complex structure possible given the specified combination of explanatory variables and their interactions, and performs backward stepwise selection to obtain the minimum adequate model. Comparison of the fit of different models is based on likelihood-ratio tests, against a specified threshold P value (alpha), which defaults to 0.05. Interaction terms are tested first, and then removed to test main effects. All main effects that are part of significant interaction terms are retained in the final model regardless of their significance as main effects.
 }
 \value{
 model: the final minimum adequate model
