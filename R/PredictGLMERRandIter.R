@@ -1,5 +1,7 @@
 PredictGLMERRandIter <- function(model,data,nIters=1000){
   
+  print("WARNING: Any variables that are factors in your model MUST be stored as factors in the 'data' argument to this function")
+  
   # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
   
   # Get names of model factors from prediction data frame
