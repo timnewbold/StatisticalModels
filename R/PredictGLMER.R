@@ -1,4 +1,6 @@
 PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96,randEffs = FALSE){
+
+  print("WARNING: Any variables that are factors in your model MUST be stored as factors in the 'data' argument to this function")
   
   # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
   
