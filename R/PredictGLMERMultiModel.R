@@ -1,5 +1,7 @@
 PredictGLMERMultiModel <- function(models,data,nIters=1000){
   
+  print("WARNING: Any variables that are factors in your model MUST be stored as factors in the 'data' argument to this function")
+  
   # Get names of model factors from prediction data frame
   model.factors <- names(which(sapply(data,is.factor)))
   
